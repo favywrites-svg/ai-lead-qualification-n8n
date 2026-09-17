@@ -1,0 +1,762 @@
+{
+  "name": "Lead Management- Havengate",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1Wc--VkqFrHD1n2RhPe01HnsYELkFUzACUQ6Fmy6r16g",
+          "mode": "list",
+          "cachedResultName": "HavenGate Central Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Wc--VkqFrHD1n2RhPe01HnsYELkFUzACUQ6Fmy6r16g/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1045089729,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Wc--VkqFrHD1n2RhPe01HnsYELkFUzACUQ6Fmy6r16g/edit#gid=1045089729"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -912,
+        -272
+      ],
+      "id": "42f43e6e-959e-4e5f-b7b1-b801a1bcc0c9",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "7cuIDUrV7WSqbKPh",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "724c3529-a7c0-4bca-98bf-3415fed079c5",
+              "name": "Name",
+              "value": "={{ $json['Full Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "4ec7ed11-075e-45c8-b552-7117a52a3460",
+              "name": "Email",
+              "value": "={{ $json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "61ceb182-250a-4e49-98af-bf04ee102488",
+              "name": "Phone",
+              "value": "={{ $json['Phone Number'] }}",
+              "type": "string"
+            },
+            {
+              "id": "835a728c-ebba-48f7-bd3c-54492a6b16a3",
+              "name": "Intent",
+              "value": "={{ $json['What are you looking to do?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "c29577d2-4a76-4987-84af-d05384d5e74a",
+              "name": "Property Type",
+              "value": "={{ $json['What type of property are you looking for?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "52529808-ec16-4f26-ab95-c42734884392",
+              "name": "Location",
+              "value": "={{ $json['Preferred Location'] }}",
+              "type": "string"
+            },
+            {
+              "id": "e774ebc3-06d3-40c4-8a0b-504275d6094e",
+              "name": "Budget",
+              "value": "={{ $json.Budget }}",
+              "type": "string"
+            },
+            {
+              "id": "b093c59d-cf12-4e0f-b500-c53a2dfe037d",
+              "name": "Timeline",
+              "value": "={{ $json['When are you looking to rent?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "4f5c4456-54e9-4de8-8e46-ad88a732c052",
+              "name": "Message",
+              "value": "={{ $json['Tell us a little more about what you\\'re looking for '] }}",
+              "type": "string"
+            },
+            {
+              "id": "4392ded8-8177-4a93-829c-22b0cbd3754d",
+              "name": "Source",
+              "value": "Website",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -688,
+        -272
+      ],
+      "id": "03e942a2-3ef9-48cb-b710-4a6a59010cbe",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a lead qualification assistant for HavenGate Properties, a real estate company in Abuja, Nigeria.\n\nYour job is to evaluate incoming property enquiries and determine the quality and priority of each lead for the HavenGate sales team.\n\nQUALIFICATION RULES\n\nHOT LEAD:\n- Clear intention to buy or rent.\n- Specific property requirement.\n- Specific preferred location.\n- A defined and potentially realistic budget.\n- A timeline of 3 months or less.\n\nWARM LEAD:\n- Genuine interest in buying or renting.\n- Some important requirements are known.\n- However, the budget, timeline, property requirements, or intent is incomplete or uncertain.\n\nCOLD LEAD:\n- Primarily researching.\n- Very vague enquiry.\n- No clear transaction timeline.\n- Few or no meaningful property requirements.\n- No clear intention to buy or rent.\n\nIMPORTANT RULES:\n- Do not invent information that the lead did not provide.\n- If information is missing, treat it as unknown.\n- Base your assessment only on the information provided.\n- Give an objective assessment rather than assuming that every lead is valuable.\n- Return the result using the required structured output format.\n\nNow analyze this lead:\n\nName: {{ $json.Name }}\nEmail: {{ $json.Email }}\nPhone: {{ $json.Phone }}\nIntent: {{ $json.Intent }}\nProperty Type: {{ $json[\"Property Type\"] }}\nLocation: {{ $json.Location }}\nBudget: {{ $json.Budget }}\nTimeline: {{ $json.Timeline }}\nMessage: {{ $json.Message }}\n\nDetermine:\n1. The lead's intent.\n2. The lead score from 0 to 100.\n3. Whether the lead is HOT, WARM, or COLD.\n4. A short summary of the lead.\n5. The reason for the classification.\n6. The recommended action for the sales team.\n\nSCORING RULES\n\nStart with a score of 0.\n\nAdd:\n+20 if the lead clearly intends to buy or rent\n+20 if the property type is specific\n+15 if the preferred location is specific\n+20 if a budget is provided and appears potentially realistic\n+15 if the timeline is immediate or within 3 months\n+10 if valid contact information is provided\n\nMaximum score: 100.\n\nClassification:\n90-100 = HOT\n70-89 = WARM\n0-69 = COLD\n\nDo not reduce the score simply because the lead's additional message is short if the structured form information already provides sufficient details.\n\nBase the score primarily on the information provided in the form.",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -464,
+        -272
+      ],
+      "id": "69f754a1-bdcd-4e89-9914-8f771c60fed8",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -560,
+        -64
+      ],
+      "id": "d8be9af4-2fed-4cee-8934-57ee97bf0161",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "mgam6bjgZLF0ggIV",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "={\n  \"lead_score\": 0,\n  \"lead_temperature\": \"string\",\n  \"intent\": \"string\",\n  \"summary\": \"string\",\n  \"reason\": \"string\",\n  \"recommended_action\": \"string\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -272,
+        -48
+      ],
+      "id": "69a5cb78-1cd0-401f-b226-0e68ebe21777",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output.classification }}",
+                    "rightValue": "HOT",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "6b126c59-516e-4521-a4a6-eb43bf94283f"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Hot"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "4f72b7d7-dc5d-413a-aa96-1f07396e8eea",
+                    "leftValue": "={{ $json.output.classification }}",
+                    "rightValue": "WARM",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Warm"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a9740532-7964-4341-85fc-957c0c3fb610",
+                    "leftValue": "={{ $json.output.classification }}",
+                    "rightValue": "COLD",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Cold"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -112,
+        -288
+      ],
+      "id": "4c27afed-2905-489d-b6b0-5e3e4295ae44",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0C0A7H0362",
+          "mode": "list",
+          "cachedResultName": "all-havengate-properties-ltd"
+        },
+        "text": "=COLD LEAD — Low Priority\n\nName: {{ $('Edit Fields').item.json.Name }}\nPhone: {{ $('Edit Fields').item.json.Phone }}\n\nIntent: {{ $('Basic LLM Chain').item.json.output.lead_intent }}\nProperty: {{ $('Edit Fields').item.json['Property Type'] }}\nLocation: {{ $('Edit Fields').item.json.Location }}\nBudget: {{ $('Edit Fields').item.json.Budget }}\nTimeline: {{ $('Edit Fields').item.json.Timeline }}\n\nLead Score:{{ $('Basic LLM Chain').item.json.output.lead_score }}/100\n\nAction: No immediate follow-up required.",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        112,
+        -80
+      ],
+      "id": "284065d4-2f49-49e1-904a-2e999414b7a2",
+      "name": "Cold Lead",
+      "webhookId": "218fad6b-d65d-4a3b-8cff-05eb1d2d7577",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "HcR8q0cLZQUCDZTr",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0C0A7H0362",
+          "mode": "list",
+          "cachedResultName": "all-havengate-properties-ltd"
+        },
+        "text": "=WARM LEAD — Follow Up\n\nName: {{ $('Edit Fields').item.json.Name }}\nPhone: {{ $('Edit Fields').item.json.Phone }}\n\nIntent: {{ $json.output.lead_intent }}\nProperty: {{ $('Edit Fields').item.json['Property Type'] }}\nLocation: {{ $('Edit Fields').item.json.Location }}\nBudget: {{ $('Edit Fields').item.json.Budget }}\nTimeline: {{ $('Edit Fields').item.json.Timeline }}\n\nLead Score: {{ $json.output.lead_score }}/100\n\nAction: Follow up with {{ $('Edit Fields').item.json.Name }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false,
+          "unfurl_links": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        112,
+        -272
+      ],
+      "id": "11d9cdae-e0c8-43f5-87e1-e5ea71046150",
+      "name": "Warm Lead",
+      "webhookId": "f04095db-fc96-406a-88e4-fedc05e95c25",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "HcR8q0cLZQUCDZTr",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        336,
+        -288
+      ],
+      "id": "ad77703d-2e2e-4737-b243-25ff791d6524",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1Wc--VkqFrHD1n2RhPe01HnsYELkFUzACUQ6Fmy6r16g",
+          "mode": "list",
+          "cachedResultName": "HavenGate Central Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Wc--VkqFrHD1n2RhPe01HnsYELkFUzACUQ6Fmy6r16g/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1045089729,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Wc--VkqFrHD1n2RhPe01HnsYELkFUzACUQ6Fmy6r16g/edit#gid=1045089729"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $('Google Sheets Trigger').item.json.Timestamp }}",
+            "Full Name": "={{ $('Google Sheets Trigger').item.json['Full Name'] }}",
+            "Email": "={{ $('Google Sheets Trigger').item.json.Email }}",
+            "Phone Number": "={{ $('Google Sheets Trigger').item.json['Phone Number'] }}",
+            "What are you looking to do?": "={{ $('Google Sheets Trigger').item.json['What are you looking to do?'] }}",
+            "What type of property are you looking for?": "={{ $('Google Sheets Trigger').item.json['What type of property are you looking for?'] }}",
+            "Preferred Location": "={{ $('Google Sheets Trigger').item.json['Preferred Location'] }}",
+            "Budget": "={{ $('Google Sheets Trigger').item.json.Budget }}",
+            "When are you looking to rent?": "={{ $('Google Sheets Trigger').item.json['When are you looking to rent?'] }}",
+            "Tell us a little more about what you're looking for ": "={{ $('Google Sheets Trigger').item.json['Tell us a little more about what you\\'re looking for '] }}",
+            "Lead Score": "={{ $('Google Sheets Trigger').item.json['Lead Score'] }}",
+            "Classification": "={{ $('Basic LLM Chain').item.json.output.classification }}",
+            "Ai Summary": "={{ $('Basic LLM Chain').item.json.output.summary }}",
+            "AI Reasoning": "={{ $('Basic LLM Chain').item.json.output.reason_for_classification }}",
+            "Recommended Action": "={{ $('Basic LLM Chain').item.json.output.recommended_action }}"
+          },
+          "matchingColumns": [
+            "Timestamp"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "What are you looking to do?",
+              "displayName": "What are you looking to do?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "What type of property are you looking for?",
+              "displayName": "What type of property are you looking for?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Preferred Location",
+              "displayName": "Preferred Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "When are you looking to rent?",
+              "displayName": "When are you looking to rent?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tell us a little more about what you're looking for ",
+              "displayName": "Tell us a little more about what you're looking for ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Score",
+              "displayName": "Lead Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Classification",
+              "displayName": "Classification",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ai Summary",
+              "displayName": "Ai Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI Reasoning",
+              "displayName": "AI Reasoning",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Recommended Action",
+              "displayName": "Recommended Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ok",
+              "displayName": "ok",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "channel",
+              "displayName": "channel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "message_timestamp",
+              "displayName": "message_timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        560,
+        -272
+      ],
+      "id": "9358470f-9428-49ca-a411-baeb99b8687b",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iU1Xeh9G5awrGyOc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0C0A7H0362",
+          "mode": "list",
+          "cachedResultName": "all-havengate-properties-ltd"
+        },
+        "text": "=HOT LEAD — Immediate Attention\n\nName: {{ $('Edit Fields').item.json.Name }}\nPhone: {{ $('Edit Fields').item.json.Phone }}\n\nIntent: {{ $json.output.lead_intent }}\nProperty: {{ $('Edit Fields').item.json['Property Type'] }}\nLocation: {{ $('Edit Fields').item.json.Location }}\nBudget: {{ $('Edit Fields').item.json.Budget }}\nTimeline: {{ $('Edit Fields').item.json.Timeline }}\n\nLead Score: {{ $json.output.lead_score }}/100\n\nAction: Contact {{ $('Edit Fields').item.json.Name }} Immediately",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        112,
+        -464
+      ],
+      "id": "d923d6a7-2788-44d3-90dd-c91a05c32651",
+      "name": "Hot Lead",
+      "webhookId": "33106c38-64ae-4e60-b8a8-91ee3ffb9f2a",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "HcR8q0cLZQUCDZTr",
+          "name": "Slack account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Hot Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Warm Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cold Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cold Lead": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Warm Lead": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hot Lead": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "bcb62a6f-e6ac-4faa-b368-3fd08e4a1e82",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8ef9fc083bced612473d95cc5d9e17283239e0f11601830ba5519975a10d63c0"
+  },
+  "nodeGroups": [],
+  "id": "r7JbVtvUdvrvkUx8",
+  "tags": []
+}
